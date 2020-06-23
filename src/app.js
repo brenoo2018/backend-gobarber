@@ -3,6 +3,8 @@
 const express = require('express');
 const routes = require('./routes');
 
+require('./database'); // carrega o arquivo de conexão
+
 class App {
   constructor() {
     // inicializa a varirável server p/ receber a instancia do express

@@ -2,7 +2,7 @@ const { Model } = require('sequelize');
 const Sequelize = require('sequelize');
 
 /**
- * Criar model do banco de dados evitando as colunas que sao PK, FK, created, updated
+ * Criar model do banco de dados colocando apenas as colunas que o usuário irá preencher
  */
 class User extends Model {
   static init(sequelize) {
