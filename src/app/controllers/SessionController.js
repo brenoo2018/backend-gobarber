@@ -1,10 +1,26 @@
 const jwt = require('jsonwebtoken');
+const Yup = require('yup');
 
 const User = require('../models/User');
 const configAuth = require('../../config/configAuth');
 
 class SessionController {
   async store(req, res) {
+    /**
+     * Início validação da entrada de dados
+     */
+    const schema = Yup.object().shape({
+      email: Yup.string().email().required(),
+      password: Yup.string().required(),
+    });
+
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Falha na validação dos dados' });
+    }
+    /**
+     * Fim validação da entrada de dados
+     */
+
     const { email, password } = req.body;
 
     /**
