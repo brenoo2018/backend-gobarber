@@ -1,5 +1,5 @@
 // ARQUIVO ONDE FICA A CONFIGURAÇÃO DA ESTRUTURA DE PASTAS
-
+const path = require('path');
 const express = require('express');
 const routes = require('./routes');
 
@@ -17,11 +17,18 @@ class App {
     this.routes();
   }
 
-  /*
-   * configura p/ receber requisições post em json
-   */
   middlewares() {
+    /*
+     * configura p/ receber requisições post em json
+     */
     this.server.use(express.json());
+    /*
+     * configura p/ ler arquivos estáticos
+     */
+    this.server.use(
+      '/files',
+      express.static(path.resolve(__dirname, '..', 'tmp', 'uploads'))
+    );
   }
 
   /*

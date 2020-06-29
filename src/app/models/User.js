@@ -35,9 +35,9 @@ class User extends Model {
 
   static associate(models) {
     /**
-     * este model de usuário, pertence a um model de file na coluna referenciada
+     * este model de usuário, pertence a um model de file na coluna referenciada com o apelido de avatar
      */
-    this.belongsTo(models.File, { foreignKey: 'avatar_id' });
+    this.belongsTo(models.File, { foreignKey: 'avatar_id', as: 'avatar' });
   }
 
   /**
