@@ -3,6 +3,7 @@ const Yup = require('yup');
 const { startOfHour, parseISO, isBefore } = require('date-fns');
 const Appointment = require('../models/Appointment');
 const User = require('../models/User');
+const File = require('../models/File');
 
 class AppointmentController {
   async store(req, res) {
@@ -44,7 +45,7 @@ class AppointmentController {
     const hourStart = startOfHour(parseISO(date));
 
     if (isBefore(hourStart, new Date())) {
-      res
+      return res
         .status(400)
         .json({ error: 'Não é permitido datas anteriores da data atual' });
     }
@@ -58,7 +59,7 @@ class AppointmentController {
     });
 
     if (checkAvailable) {
-      res.status(400).json({ error: 'Não há vagas neste horário' });
+      return res.status(400).json({ error: 'Não há vagas neste horário' });
     }
 
     const appointment = await Appointment.create({
@@ -67,7 +68,31 @@ class AppointmentController {
       date: hourStart,
     });
 
-    res.json(appointment);
+    return res.json(appointment);
+  }
+
+  async index(req, res) {
+    const appointments = await Appointment.findAll({
+      where: { user_id: req.userId, canceled_at: null },
+      order: ['date'],
+      attributes: ['id', 'date'],
+      include: [
+        {
+          model: User,
+          as: 'provider',
+          attributes: ['id', 'name'],
+          include: [
+            {
+              model: File,
+              as: 'avatar',
+              attributes: ['id', 'path', 'url'],
+            },
+          ],
+        },
+      ],
+    });
+
+    return res.json(appointments);
   }
 }
 
