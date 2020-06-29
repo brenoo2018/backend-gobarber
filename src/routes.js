@@ -7,6 +7,7 @@ const configMulter = require('./config/configMulter');
 
 const UserController = require('./app/controllers/UserController');
 const SessionController = require('./app/controllers/SessionController');
+const FileController = require('./app/controllers/FileController');
 
 const authMiddleware = require('./app/middlewares/authMiddleware');
 
@@ -20,8 +21,6 @@ routes.use(authMiddleware);
 
 routes.put('/users', UserController.update);
 
-routes.post('/files', uploads.single('file'), (req, res) => {
-  res.json({ ok: true });
-});
+routes.post('/files', uploads.single('file'), FileController.store);
 
 module.exports = routes;

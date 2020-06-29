@@ -33,6 +33,13 @@ class User extends Model {
     return this;
   }
 
+  static associate(models) {
+    /**
+     * este model de usuário, pertence a um model de file na coluna referenciada
+     */
+    this.belongsTo(models.File, { foreignKey: 'avatar_id' });
+  }
+
   /**
    * compara a senha que o usuário está inserindo com a senha do BD
    */
