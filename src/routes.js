@@ -10,6 +10,7 @@ const SessionController = require('./app/controllers/SessionController');
 const FileController = require('./app/controllers/FileController');
 const ProviderController = require('./app/controllers/ProviderController');
 const AppointmentController = require('./app/controllers/AppointmentController');
+const ScheduleController = require('./app/controllers/ScheduleController');
 
 const authMiddleware = require('./app/middlewares/authMiddleware');
 
@@ -27,6 +28,8 @@ routes.get('/providers', ProviderController.index);
 
 routes.post('/appointments', AppointmentController.store);
 routes.get('/appointments', AppointmentController.index);
+
+routes.get('/schedules', ScheduleController.index);
 
 routes.post('/files', uploads.single('file'), FileController.store);
 
