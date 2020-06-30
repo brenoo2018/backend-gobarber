@@ -1,7 +1,11 @@
 /**
  * classe onde vai ser possível fazer o envio do email
  */
+const { resolve } = require('path');
 const nodemailer = require('nodemailer');
+const exphbs = require('express-handlebars');
+const nodemailerhbs = require('nodemailer-express-handlebars');
+
 const configMail = require('../config/configMail');
 
 class Mail {
@@ -16,6 +20,29 @@ class Mail {
       secure,
       auth: auth.user ? auth : null, // algumas estratégias de envio de email não possui autenticação
     });
+
+    this.configureTemplates();
+  }
+
+  /**
+   * método que configura o template engine passando o caminho das views
+   */
+  configureTemplates() {
+    const viewPath = resolve(__dirname, '..', 'app', 'views', 'emails');
+
+    this.transporter.use(
+      'compile',
+      nodemailerhbs({
+        viewEngine: exphbs.create({
+          layoutsDir: resolve(viewPath, 'layouts'),
+          partialsDir: resolve(viewPath, 'partials'),
+          defaultLayout: 'default',
+          extname: '.hbs',
+        }),
+        viewPath,
+        extName: '.hbs',
+      })
+    );
   }
 
   /**
