@@ -1,6 +1,16 @@
 /* eslint-disable camelcase */
+
+/**
+ * Controller p/ o usuário criar seus agendamentos, listar e cancelar
+ */
 const Yup = require('yup');
-const { startOfHour, parseISO, isBefore, format } = require('date-fns');
+const {
+  startOfHour,
+  parseISO,
+  isBefore,
+  format,
+  subHours,
+} = require('date-fns');
 const pt = require('date-fns/locale/pt');
 const Appointment = require('../models/Appointment');
 const User = require('../models/User');
@@ -122,6 +132,33 @@ class AppointmentController {
     });
 
     return res.json(appointments);
+  }
+
+  async delete(req, res) {
+    const { id } = req.params;
+
+    const appointment = await Appointment.findByPk(id);
+
+    if (appointment.user_id !== req.userId) {
+      return res
+        .status(401)
+        .json({ error: 'Você só pode cancelar o agendamento do seu usuário' });
+    }
+
+    const dateWithSub = subHours(appointment.date, 2);
+
+    if (isBefore(dateWithSub, new Date())) {
+      return res.status(401).json({
+        error:
+          'Não é permitido cancelar o agendamento faltando 2 horas pro horário marcado',
+      });
+    }
+
+    appointment.canceled_at = new Date();
+
+    await appointment.save();
+
+    return res.json(appointment);
   }
 }
 

@@ -1,3 +1,7 @@
+/**
+ * Controller p/ listar os prestadores de serviços
+ */
+
 const User = require('../models/User');
 const File = require('../models/File');
 

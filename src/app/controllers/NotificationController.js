@@ -1,3 +1,7 @@
+/**
+ * Controller p/ o prestador de serviço listar as notificações de agendamento de seus clientes(usuários)
+ */
+
 const Notification = require('../schemas/Notification');
 const User = require('../models/User');
 

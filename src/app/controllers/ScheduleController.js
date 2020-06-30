@@ -1,3 +1,7 @@
+/**
+ * Controller p/ o prestador de serviços logado listar os agendamentos do dia
+ */
+
 const { startOfDay, endOfDay, parseISO } = require('date-fns');
 const { Op } = require('sequelize');
 const Appointment = require('../models/Appointment');
@@ -17,6 +21,7 @@ class ScheduleController {
 
     const { date } = req.query;
     const parsedDate = parseISO(date);
+    // console.log(parsedDate);
 
     /**
      * listando todos os agendamentos em que o prestador de serviço for o usuário logado
