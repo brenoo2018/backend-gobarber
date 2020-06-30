@@ -25,7 +25,7 @@ class ScheduleController {
 
     /**
      * listando todos os agendamentos em que o prestador de serviço for o usuário logado
-     * que não estão cancelados e que a data esteja entre o começo e o final do dia
+     * que não estão cancelados e que a data esteja entre o começo e o final do dia atual
      */
 
     const appointments = await Appointment.findAll({
