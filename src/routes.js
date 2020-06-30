@@ -33,6 +33,7 @@ routes.get('/appointments', AppointmentController.index);
 routes.get('/schedules', ScheduleController.index);
 
 routes.get('/notifications', NotificationController.index);
+routes.put('/notifications/:id', NotificationController.update);
 
 routes.post('/files', uploads.single('file'), FileController.store);
 
