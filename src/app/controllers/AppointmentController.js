@@ -1,9 +1,11 @@
 /* eslint-disable camelcase */
 const Yup = require('yup');
-const { startOfHour, parseISO, isBefore } = require('date-fns');
+const { startOfHour, parseISO, isBefore, format } = require('date-fns');
+const pt = require('date-fns/locale/pt');
 const Appointment = require('../models/Appointment');
 const User = require('../models/User');
 const File = require('../models/File');
+const Notification = require('../schemas/Notification');
 
 class AppointmentController {
   async store(req, res) {
@@ -16,7 +18,7 @@ class AppointmentController {
     });
 
     if (!(await schema.isValid(req.body))) {
-      res.status(400).json({ error: 'Falha na validação' });
+      return res.status(400).json({ error: 'Falha na validação' });
     }
     /**
      * Fim validação
@@ -33,8 +35,14 @@ class AppointmentController {
     });
 
     if (!isProvider) {
-      res.status(401).json({
+      return res.status(401).json({
         error: 'O usuário selecionado não é um prestador de serviços',
+      });
+    }
+
+    if (isProvider.id === req.userId) {
+      return res.status(401).json({
+        error: 'Não é permitido agendar um horário pra você mesmo',
       });
     }
 
@@ -66,6 +74,23 @@ class AppointmentController {
       user_id: req.userId,
       provider_id,
       date: hourStart,
+    });
+
+    /**
+     * Notificar prestador de serviço
+     */
+
+    const user = await User.findByPk(req.userId);
+
+    const formattedDate = format(
+      hourStart,
+      "'dia' dd 'de' MMMM'/'yyyy', às' H:mm'h'",
+      { locale: pt }
+    );
+
+    await Notification.create({
+      content: `Novo agendamento de ${user.name} para o ${formattedDate}`,
+      user: provider_id,
     });
 
     return res.json(appointment);
