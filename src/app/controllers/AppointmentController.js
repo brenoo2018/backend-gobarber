@@ -16,7 +16,8 @@ const Appointment = require('../models/Appointment');
 const User = require('../models/User');
 const File = require('../models/File');
 const Notification = require('../schemas/Notification');
-const Mail = require('../../lib/Mail');
+const CancellationMail = require('../jobs/CancellationMail');
+const Queue = require('../../lib/Queue');
 
 class AppointmentController {
   async store(req, res) {
@@ -204,24 +205,11 @@ class AppointmentController {
 
     /**
      * Envia o email após o cancelamento p/ o prestador de serviço
+     * Chama o método queue que recebe o job e os parâmetros
      */
 
-    await Mail.sendMail({
-      to: `${appointment.provider.name} <${appointment.provider.email}>`,
-      subject: 'Agendamento cancelado',
-      template: 'cancelation',
-      /**
-       * enviando variáveis que estão esperando ser recebidas nas views
-       */
-      context: {
-        provider: appointment.provider.name,
-        user: appointment.user.name,
-        date: format(
-          appointment.date,
-          "'dia' dd 'de' MMMM'/'yyyy', às' H:mm'h'",
-          { locale: pt }
-        ),
-      },
+    await Queue.add(CancellationMail.key, {
+      appointment,
     });
 
     return res.json(appointment);
