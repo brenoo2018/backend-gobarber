@@ -124,7 +124,7 @@ class AppointmentController {
       order: ['date'],
       limit: 20, // limitar registros
       offset: (page - 1) * 20, // informar de quanto em quanto quer pular
-      attributes: ['id', 'date'],
+      attributes: ['id', 'date', 'past', 'cancelable'],
       include: [
         {
           // inclui o model de usuário que está relacionado com o agendamento
