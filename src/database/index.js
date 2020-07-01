@@ -35,6 +35,10 @@ class Database {
       );
   }
 
+  /**
+   * faz a conexão com o mongodb
+   */
+
   mongo() {
     this.mongoConnection = mongoose.connect(
       'mongodb://localhost:27017/gobarber',

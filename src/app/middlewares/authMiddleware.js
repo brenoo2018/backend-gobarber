@@ -4,7 +4,7 @@ const configAuth = require('../../config/configAuth');
 
 module.exports = async (req, res, next) => {
   /**
-   * pegando o token de atenticaão do header;
+   * pegando o token de autenticação do header;
    */
   const authHeader = req.headers.authorization;
 

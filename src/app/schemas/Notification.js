@@ -1,3 +1,6 @@
+/**
+ * model de notificação usando mongoDB no controller NotificationController
+ */
 const mongoose = require('mongoose');
 
 const NotificationSchema = new mongoose.Schema(

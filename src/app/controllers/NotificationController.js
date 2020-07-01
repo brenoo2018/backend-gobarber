@@ -11,9 +11,13 @@ class NotificationController {
       where: { id: req.userId, provider: true },
     });
 
+    /**
+     * verifica se o usuário logado é um prestador de serviço
+     */
+
     if (!isProvider) {
       res.status(401).json({
-        error: 'Permissão negada para visualizar as notificações deste usuário',
+        error: 'O usuário não é um prestador de serviço',
       });
     }
 
@@ -31,10 +35,14 @@ class NotificationController {
 
     // const notification = await Notification.findById(id);
 
+    /**
+     * mongoose tem a opção de procurar o dado e atualizá-lo passando um objeto
+     */
+
     const notification = await Notification.findByIdAndUpdate(
       id,
-      { read: true },
-      { new: true }
+      { read: true }, // campo a ser atualizado
+      { new: true } // opção que retorna os dados já atualizados
     );
 
     return res.json(notification);

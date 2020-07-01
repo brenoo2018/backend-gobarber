@@ -13,6 +13,10 @@ class ScheduleController {
       where: { id: req.userId, provider: true },
     });
 
+    /**
+     * verifica se o usuário é um prestador de serviço
+     */
+
     if (!checkUserProvider) {
       return res.status(401).json({
         error: 'O usuário não é um prestador de serviços',
@@ -24,8 +28,8 @@ class ScheduleController {
     // console.log(parsedDate);
 
     /**
-     * listando todos os agendamentos em que o prestador de serviço for o usuário logado
-     * que não estão cancelados e que a data esteja entre o começo e o final do dia atual
+     * listando todos os agendamentos em que o usuário logado é um prestador de serviço
+     * que os agendamentos não estão cancelados e que a data esteja entre o começo e o final do dia atual
      */
 
     const appointments = await Appointment.findAll({

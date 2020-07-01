@@ -59,9 +59,13 @@ class AppointmentController {
 
     /**
      * pegando o início da hora enviada e verificando se a data do agendamento é uma data passada
+     * parseISO transforma a data inserida em um objeto javascript
+     * ex: se a hr inserida for assim 2020-07-01T07:00-03:00 ele ficará assim -> 2020-07-01T10:00:00.000Z
      */
 
     const hourStart = startOfHour(parseISO(date));
+    // console.log(hourStart);
+    // console.log(date);
 
     if (isBefore(hourStart, new Date())) {
       return res
@@ -70,7 +74,7 @@ class AppointmentController {
     }
 
     /**
-     * verificando se já tem agendamento na mesma data e horário
+     * verificando se já tem agendamento na mesma data e horário e com o mesmo prestador
      */
 
     const checkAvailable = await Appointment.findOne({
@@ -92,6 +96,10 @@ class AppointmentController {
      */
 
     const user = await User.findByPk(req.userId);
+
+    /**
+     * formata a data inserida
+     */
 
     const formattedDate = format(
       hourStart,
@@ -118,9 +126,11 @@ class AppointmentController {
       attributes: ['id', 'date'],
       include: [
         {
+          // inclui o model de usuário que está relacionado com o agendamento
           model: User,
           as: 'provider',
           attributes: ['id', 'name'],
+          // inclui o model de file(avatar) que está relacionado com o usuário
           include: [
             {
               model: File,
@@ -139,13 +149,14 @@ class AppointmentController {
     const { id } = req.params;
 
     const appointment = await Appointment.findByPk(id, {
-      // trás os dados do prestador de serviço p/ ser enviado o email
+      // trás os dados do prestador de serviço p/ ser enviado no email
       include: [
         {
           model: User,
           as: 'provider',
           attributes: ['name', 'email'],
         },
+        // trás os dados do usuário p/ ser enviado no email
         {
           model: User,
           as: 'user',
@@ -160,6 +171,10 @@ class AppointmentController {
         .json({ error: 'Você só pode cancelar o agendamento do seu usuário' });
     }
 
+    /**
+     * subtrai a hora marcada por 2 e verifica se está no intervalo p/ poder cancelar
+     */
+
     const dateWithSub = subHours(appointment.date, 2);
 
     if (isBefore(dateWithSub, new Date())) {
@@ -169,18 +184,26 @@ class AppointmentController {
       });
     }
 
+    /**
+     * verifica se o agendamento já foi cancelado
+     */
+
     if (appointment.canceled_at) {
       return res.status(401).json({
         error: 'Agendamento já cancelado',
       });
     }
 
+    /**
+     * cancela o agendamento e libera o horário
+     */
+
     appointment.canceled_at = new Date();
 
     await appointment.save();
 
     /**
-     * Envia o email após o cancelamento p/ o email do prestador de serviço
+     * Envia o email após o cancelamento p/ o prestador de serviço
      */
 
     await Mail.sendMail({
