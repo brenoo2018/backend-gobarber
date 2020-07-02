@@ -2,12 +2,12 @@
  * Configuração do mailtrap.io p/ ambiente de desenvolvimento
  */
 module.exports = {
-  host: 'smtp.mailtrap.io',
-  port: 2525,
+  host: process.env.MAIL_HOST,
+  port: process.env.MAIL_PORT,
   secure: false,
   auth: {
-    user: 'ac837395e2fb08',
-    pass: '50e9ce809fc928',
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
   },
   default: {
     from: 'Equipe <noreply@gobarber.com>', // remetente padrão

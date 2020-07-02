@@ -1,5 +1,7 @@
 // ARQUIVO ONDE FICA A CONFIGURAÇÃO DA ESTRUTURA DE PASTAS
 
+require('dotenv/config');
+
 const path = require('path');
 const Youch = require('youch'); // biblioteca p/ tratamento de exceções
 const Sentry = require('@sentry/node'); // biblioteca p/ monitoramento de erros
@@ -59,9 +61,12 @@ class App {
 
   exceptionHandler() {
     this.server.use(async (err, req, res, next) => {
-      const errors = await new Youch(err, req).toJSON();
+      if (process.env.NODE_ENV === 'development') {
+        const errors = await new Youch(err, req).toJSON();
+        res.status(500).json(errors);
+      }
 
-      res.status(500).json(errors);
+      res.status(500).json({ error: 'erro interno no servidor' });
     });
   }
 }
