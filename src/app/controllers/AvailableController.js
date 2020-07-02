@@ -35,7 +35,7 @@ class AvailableController {
      * listandoa agendamentos do dia atual
      */
 
-    const appointments = await Appointment.findAll({
+    const appointments = await Appointment.finddAll({
       where: {
         provider_id: providerId,
         canceled_at: null,
