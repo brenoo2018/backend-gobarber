@@ -1,3 +1,7 @@
+/**
+ * controller p/ listar os horarios disponíveis pra agendamento de um determinado prestador de serviço
+ * no intervalo de um dia
+ */
 const {
   startOfDay,
   endOfDay,
@@ -8,6 +12,7 @@ const {
   isAfter,
 } = require('date-fns');
 const { Op } = require('sequelize');
+
 const Appointment = require('../models/Appointment');
 
 class AvailableController {
@@ -15,12 +20,20 @@ class AvailableController {
     const { providerId } = req.params;
     const { date } = req.query;
 
+    /**
+     * Verifica se informou a data
+     */
+
     if (!date) {
       return res.status(400).json({ error: 'Data inválida' });
     }
 
     const searchDate = Number(date);
     // console.log(searchDate);
+
+    /**
+     * listandoa agendamentos do dia atual
+     */
 
     const appointments = await Appointment.findAll({
       where: {
@@ -31,6 +44,10 @@ class AvailableController {
         },
       },
     });
+
+    /**
+     * horários que o prestador de serviço atende
+     */
 
     const schedule = [
       '08:00',
@@ -47,12 +64,20 @@ class AvailableController {
       '19:00',
     ];
 
+    /**
+     * percorre o vetor separa as horas e minutos e formata p/ o padrão timezone
+     */
+
     const available = schedule.map((time) => {
       const [hour, minute] = time.split(':');
       const value = setSeconds(
         setMinutes(setHours(searchDate, hour), minute),
         0
       );
+
+      /**
+       * retorna o horário, horário formatado em timezone e se o horário está disponível
+       */
 
       return {
         time,

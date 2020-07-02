@@ -7,12 +7,14 @@ class Appointment extends Model {
       {
         date: Sequelize.DATE,
         canceled_at: Sequelize.DATE,
+        // retorna true se o horário já passou e false caso não tenha
         past: {
           type: Sequelize.VIRTUAL,
           get() {
             return isBefore(this.date, new Date());
           },
         },
+        // retorna true se o horário foi cancelado e false caso não tenha
         cancelable: {
           type: Sequelize.VIRTUAL,
           get() {
