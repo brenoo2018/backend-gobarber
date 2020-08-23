@@ -6,6 +6,7 @@ const path = require('path');
 const Youch = require('youch'); // biblioteca p/ tratamento de exceções
 const Sentry = require('@sentry/node'); // biblioteca p/ monitoramento de erros
 const express = require('express');
+const cors = require('cors');
 
 // tem que ser importado antes das rotas
 require('express-async-errors');
@@ -34,6 +35,7 @@ class App {
   middlewares() {
     this.server.use(Sentry.Handlers.requestHandler());
 
+    this.server.use(cors());
     /*
      * configura p/ receber requisições post em json
      */

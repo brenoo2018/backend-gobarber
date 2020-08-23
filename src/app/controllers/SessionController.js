@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const Yup = require('yup');
 
 const User = require('../models/User');
+const File = require('../models/File');
 const configAuth = require('../../config/configAuth');
 
 class SessionController {
@@ -26,7 +27,16 @@ class SessionController {
     /**
      * verifica se existe usuário
      */
-    const userExists = await User.findOne({ where: { email } });
+    const userExists = await User.findOne({
+      where: { email },
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['id', 'path', 'url'],
+        },
+      ],
+    });
 
     if (!userExists) {
       res.status(401).json({ error: 'Usuário não encontrado' });
@@ -39,7 +49,7 @@ class SessionController {
       return res.status(401).json({ error: 'Senha incorreta' });
     }
 
-    const { id, name } = userExists;
+    const { id, name, avatar, provider } = userExists;
 
     /**
      * retorna os dados do usuário juntamente com o token de autenticação
@@ -49,6 +59,8 @@ class SessionController {
         id,
         name,
         email,
+        provider,
+        avatar,
       },
       /**
        * 1 parâmetro - objeto payload com os dados
